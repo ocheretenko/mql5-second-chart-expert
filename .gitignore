@@ -1,0 +1,6 @@
+*
+!.gitignore
+!MQL5
+!MQL5/Experts
+!MQL5/Experts/Advisors
+!MQL5/Experts/Advisors/AN_EXPERT.mq5
