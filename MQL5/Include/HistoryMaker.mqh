@@ -11,13 +11,15 @@ class HistoryMaker
 private:
 
 public:
+                     //vars
                      datetime rewrite_time;
+                     
+                     //methods
                      HistoryMaker();
                     ~HistoryMaker();
-                    datetime NewTime();
-                    datetime HistoryMaker::NewTime2(int diff);
+                    datetime TimeJump(int multiplier);
                     bool Make(string from_symbl, string to_symbl);
-  };
+};
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -39,61 +41,57 @@ bool HistoryMaker::Make(string from_symbl, string to_symbl)
    
    int copied = -1;
    
-   if ((copied = CopyTicks(from_symbl, ticks,COPY_TICKS_ALL,0,1000000)) < 1) return false;
+   if ((copied = CopyTicks(from_symbl, ticks,COPY_TICKS_ALL,0,1000000)) < 1) 
+   {
+      Print("History Maker -- could not copy history ticks ERROR# " + (string)GetLastError());
+      return false;
+   }
    
-   
-   int previous_sec = -1;
-   datetime previous_dt = 0;
+   datetime previous_dt = NULL;
    
    for (int i=0; i < copied; i++)
    {
       MqlDateTime dt;
       TimeToStruct(ticks[i].time, dt);
       
-      if (previous_sec == -1) // if 1st iteration
+      if (previous_dt == NULL)                           //set datetime on 1st iteration
       {
          previous_dt = ticks[i].time;
-         previous_sec = dt.sec;
       }
       
-      int sec_dif = (int)(ticks[i].time - previous_dt); //
+      int sec_dif = (int)(ticks[i].time - previous_dt);  //get time difference between ticks in second 
       
       if (sec_dif > 0)
       {
-         NewTime2(sec_dif);
+         TimeJump(sec_dif);
          
-         previous_dt = ticks[i].time;
-         previous_sec = dt.sec;
-         
+         previous_dt = ticks[i].time;                    //refresh previous datetime
       }
       
-      long msc = ticks[i].time_msc - ticks[i].time *1000;
+      long msc = ticks[i].time_msc - ticks[i].time *1000;//calc difference between ticks in ms
       
-      previous_dt = ticks[i].time;
+      previous_dt = ticks[i].time;                       //set previous tick time for the next iteration
       
-      ticks[i].time = rewrite_time; //+ dt.sec;
-      ticks[i].time_msc = rewrite_time * 1000 + msc;
+      ticks[i].time = rewrite_time;                      //set new sec. time for current tick
+      ticks[i].time_msc = rewrite_time * 1000 + msc;     //set new ms. time for current tick
       
       
    }
    
    //calculating is done
-   SymbolSelect(to_symbl,true);
-   CustomTicksAdd(to_symbl, ticks);
+   if (!SymbolSelect(to_symbl,true) || !CustomTicksAdd(to_symbl, ticks))
+   {
+      
+      Print("History Maker -- SymbolSelect/CustomTicksAdd false result -- ERROR# " + (string)GetLastError());
+      return false;
+   }
    
    return true;
 }
 
-datetime HistoryMaker::NewTime2(int diff)
+datetime HistoryMaker::TimeJump(int multiplier)
 {     
-   rewrite_time += 60 * diff;
+   rewrite_time += 60 * multiplier;
    
    return rewrite_time;
 }
-
-datetime HistoryMaker::NewTime()
-   {
-      rewrite_time += 60;
-      
-      return rewrite_time;
-   }
