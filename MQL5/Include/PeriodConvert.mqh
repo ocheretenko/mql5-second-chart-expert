@@ -13,6 +13,9 @@ private:
                datetime history_rewrite_time;
                datetime live_rewrite_time;
                
+               datetime rewrite_start_time;
+               datetime first_tick_true_time;
+               
                datetime history_previous_tick_true_time ,live_previous_tick_true_time;
                
                //datetime previous_tick_real_time;
@@ -95,30 +98,18 @@ bool PeriodConvert::PrivateSecondsToMinutes(MqlTick &ticks[], int quantity, date
    
    for (int i=0; i < quantity; i++)
    {
-      MqlDateTime dt;                                                //datetime struct of current tick
-      TimeToStruct(ticks[i].time, dt);
+      if (first_tick_true_time == NULL)
+         first_tick_true_time = ticks[0].time;
       
-      if (previous_tick_true_time == NULL)                           //set datetime on 1st iteration
-      {
-         previous_tick_true_time = ticks[i].time;
-      }
-      
-      int sec_dif = (int)(ticks[i].time - previous_tick_true_time);  //get time difference between ticks in second 
-      
-      
-      if (sec_dif > 0)                                               //jump in time if there is a new second
-      {
-         TimeJump(sec_dif, rewrite_with);
-      }
+                                                                     //get the rewrite time for current tick
+      datetime rewrite_time = (ticks[i].time - first_tick_true_time) * 60 + rewrite_start_time;
       
       long msc = ticks[i].time_msc - ticks[i].time*1000;             //get tick's ms. state
       
-      previous_tick_true_time = ticks[i].time;                       //set previous tick time for the next iteration calculations
-      
-      ticks[i].time = rewrite_with;                                  //set new fake sec. time for current tick
-      ticks[i].time_msc = rewrite_with * 1000 + msc;                 //set new fake ms. time for current tick
+      ticks[i].time = rewrite_time;                                  //set new fake sec. time for current tick
+      ticks[i].time_msc = rewrite_time * 1000 + msc;                 //set new fake ms. time for current tick
    }
-   
+
    return true;
 }
 
@@ -131,6 +122,8 @@ bool PeriodConvert::PrivateTicksToMinutes(MqlTick &ticks[], int quantity, dateti
       Alert("This object was used as SecondsConverter. Now it's set for real-time convertation. Please create a new object or use 'PeriodConvert::Reset();' if you need to convert another array.");
       return false;
    }
+
+
 
    if (quantity < 1) return false;
 
@@ -161,9 +154,13 @@ datetime PeriodConvert::TimeJump(int multiplier, datetime &time)
 
 void PeriodConvert::Reset(datetime start_time = D'2000.1.1 0:00')
 {
-   history_rewrite_time = live_rewrite_time = start_time;
+   history_rewrite_time = 
+      live_rewrite_time =  
+      rewrite_start_time = start_time;
    
-   history_previous_tick_true_time = live_previous_tick_true_time = NULL;
+   first_tick_true_time = 
+      history_previous_tick_true_time = 
+      live_previous_tick_true_time = NULL;
    
    used_as = NotYet;
 }
