@@ -8,7 +8,7 @@
 #property version   "1.00"
 
 class PeriodConvert
-  {
+{
 private:
                datetime history_rewrite_time;
                datetime live_rewrite_time;
@@ -171,14 +171,9 @@ bool PeriodConvert::OnTickUpdateTicks(MqlTick &tick[])
 {
    if (used_as == SecondsConverter) return false;
    
-   //MqlTick ticks[1];
-   //ticks[0] = tick;
-   
-   
    if (PrivateTicksToMinutes(tick, 1, live_rewrite_time))
          return false;
-         
-   //tick = ticks[0];
+   
    return true;
 }
 
@@ -186,13 +181,9 @@ bool PeriodConvert::OnTickUpdateTicks(MqlTick &tick[])
 bool PeriodConvert::OnTickUpdateSeconds(MqlTick &tick[])
 {
    if (used_as == TicksConverter) return false;
-   
-   //MqlTick ticks[1];
-  // ticks[0] = tick;
-   
+
    if (PrivateSecondsToMinutes(tick, 1, live_rewrite_time, live_previous_tick_true_time))
          return false;
 
- //  tick = ticks[0];
    return true;
 }
