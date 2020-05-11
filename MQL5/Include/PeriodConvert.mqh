@@ -10,25 +10,19 @@
 class PeriodConvert
 {
 private:
-               datetime history_rewrite_time;
-               datetime live_rewrite_time;
-               
                datetime rewrite_start_time;
                datetime first_tick_true_time;
                
-               datetime history_previous_tick_true_time ,live_previous_tick_true_time;
+               uint tick_convert_ticks_in_history;
                
-               //datetime previous_tick_real_time;
                enum ClassWasUsedAs {NotYet, TicksConverter, SecondsConverter};
                ClassWasUsedAs used_as;
                
                //methods
                datetime TimeJump(int multiplier, datetime &time);
                
-               bool PrivateTicksToMinutes(MqlTick &ticks[], int quantity, datetime &rewrite_with);
-                  
-               bool PrivateSecondsToMinutes(MqlTick &ticks[], int quantity, datetime &rewrite_with, 
-                  datetime &previous_tick_true_time);
+               bool PrivateTicksToMinutes(MqlTick &ticks[], int quantity, uint offset);
+               bool PrivateSecondsToMinutes(MqlTick &ticks[], int quantity);
 public:
 
                bool inUse;
@@ -66,7 +60,7 @@ PeriodConvert::~PeriodConvert()
 ***/
 bool PeriodConvert::HistorySecondsToMinutes(MqlTick &ticks[], int quantity)
 {
-   return PeriodConvert::PrivateSecondsToMinutes(ticks, quantity, history_rewrite_time, history_previous_tick_true_time);
+   return PeriodConvert::PrivateSecondsToMinutes(ticks, quantity);
 }
 
 
@@ -75,11 +69,12 @@ bool PeriodConvert::HistorySecondsToMinutes(MqlTick &ticks[], int quantity)
 ***/
 bool PeriodConvert::HistoryTicksToMinutes(MqlTick &ticks[], int quantity)
 {
-   return PeriodConvert::PrivateTicksToMinutes(ticks, quantity, history_rewrite_time);
+   tick_convert_ticks_in_history = quantity;
+   return PeriodConvert::PrivateTicksToMinutes(ticks, quantity, 0);
 }
 
 
-bool PeriodConvert::PrivateSecondsToMinutes(MqlTick &ticks[], int quantity, datetime &rewrite_with, datetime &previous_tick_true_time)
+bool PeriodConvert::PrivateSecondsToMinutes(MqlTick &ticks[], int quantity)
 {
    if (used_as == TicksConverter)
    {
@@ -88,13 +83,6 @@ bool PeriodConvert::PrivateSecondsToMinutes(MqlTick &ticks[], int quantity, date
    }
    
    if (quantity < 1) return false;
-   
-   if (quantity > 1)
-   {
-      live_rewrite_time =  
-         (ticks[quantity-1].time - ticks[0].time) * 60 + history_rewrite_time; //live time setup
-      live_previous_tick_true_time = ticks[quantity-1].time;                   //
-   }
    
    for (int i=0; i < quantity; i++)
    {
@@ -115,7 +103,7 @@ bool PeriodConvert::PrivateSecondsToMinutes(MqlTick &ticks[], int quantity, date
 
 
 
-bool PeriodConvert::PrivateTicksToMinutes(MqlTick &ticks[], int quantity, datetime &rewrite_with)
+bool PeriodConvert::PrivateTicksToMinutes(MqlTick &ticks[], int quantity, uint offset)
 {
    if (used_as == TicksConverter)
    {
@@ -124,44 +112,30 @@ bool PeriodConvert::PrivateTicksToMinutes(MqlTick &ticks[], int quantity, dateti
    }
 
 
-
    if (quantity < 1) return false;
-
-   if (quantity > 1)
-   {
-      live_rewrite_time =  
-         (ticks[quantity-1].time - ticks[0].time) * 60 + history_rewrite_time;
-   }
+   
    
    for (int i = 0; i < quantity; i++)
    {
-      ticks[i].time = rewrite_with;
-      ticks[i].time_msc = rewrite_with * 1000;
-      TimeJump(1, rewrite_with);
+      datetime new_time = (offset + i )* 60 + rewrite_start_time;
+      
+      ticks[i].time = new_time;
+      ticks[i].time_msc = new_time * 1000;
    }
    
    return true;
 }
 
 
-datetime PeriodConvert::TimeJump(int multiplier, datetime &time)
-{     
-   time += 60 * multiplier;
-   
-   return time;
-}
-
 
 void PeriodConvert::Reset(datetime start_time = D'2000.1.1 0:00')
 {
-   history_rewrite_time = 
-      live_rewrite_time =  
-      rewrite_start_time = start_time;
-   
-   first_tick_true_time = 
-      history_previous_tick_true_time = 
-      live_previous_tick_true_time = NULL;
-   
+
+   rewrite_start_time = start_time;
+      
+   tick_convert_ticks_in_history = NULL;   
+   first_tick_true_time = NULL;
+
    used_as = NotYet;
 }
 
@@ -171,8 +145,13 @@ bool PeriodConvert::OnTickUpdateTicks(MqlTick &tick[])
 {
    if (used_as == SecondsConverter) return false;
    
-   if (PrivateTicksToMinutes(tick, 1, live_rewrite_time))
+   
+   if (!PrivateTicksToMinutes(tick, 1, tick_convert_ticks_in_history))
          return false;
+   
+   
+   tick_convert_ticks_in_history++;
+   
    
    return true;
 }
@@ -182,7 +161,7 @@ bool PeriodConvert::OnTickUpdateSeconds(MqlTick &tick[])
 {
    if (used_as == TicksConverter) return false;
 
-   if (PrivateSecondsToMinutes(tick, 1, live_rewrite_time, live_previous_tick_true_time))
+   if (!PrivateSecondsToMinutes(tick, 1))
          return false;
 
    return true;

@@ -50,7 +50,10 @@ bool HistoryMaker::Make(string from_symbl, string to_symbl, bool tick_chart = fa
       return false;
    }
    
-   converter.HistorySecondsToMinutes(ticks, copied);
+   if (tick_chart)
+      converter.HistoryTicksToMinutes(ticks, copied);
+   else
+      converter.HistorySecondsToMinutes(ticks, copied);
    
    if (!SymbolSelect(to_symbl,true) || !CustomTicksAdd(to_symbl, ticks))
    {
