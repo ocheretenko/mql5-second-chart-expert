@@ -23,6 +23,8 @@ public:
      ~OrderGraphics();
       void OrderGraphics::SetChartId(long chart_id_);
       void Add(ulong ticket, double price, double tp, double sl);
+      void Add(ulong  ticket);
+      void Sync(ulong ticket);
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -68,4 +70,39 @@ void OrderGraphics::SetChartId(long chart_id_)
    }
    
    chart_id = chart_id_;
+}
+
+
+void OrderGraphics::Sync(ulong ticket)
+{
+   for (int i=0; i < in_list; i++)
+   {
+      if (orders[i].ticket == ticket)
+      {
+         orders[i].sync();
+         return;
+      }
+   }
+   
+   //if it did not exit the method
+   //adding the thing
+   
+   Add(ticket);
+}
+
+
+void OrderGraphics::Add(ulong  ticket)
+{
+   double sl, tp, price_open;
+      
+   
+   if (!PositionSelectByTicket(ticket) 
+      || !PositionGetDouble(POSITION_PRICE_OPEN, price_open) 
+      || !PositionGetDouble(POSITION_TP, tp) 
+      || !PositionGetDouble(POSITION_SL, sl))
+   {
+      return;
+   }
+   
+   OrderGraphics::Add(ticket,price_open ,tp, sl);
 }
