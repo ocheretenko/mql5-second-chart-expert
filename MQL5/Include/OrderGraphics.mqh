@@ -12,7 +12,8 @@
 class OrderGraphics
 {
 private:
-
+      void Add(ulong  ticket);
+      
 public:
       int in_list;
       OrderGraphicsItem orders[255];
@@ -23,6 +24,9 @@ public:
      ~OrderGraphics();
       void OrderGraphics::SetChartId(long chart_id_);
       void Add(ulong ticket, double price, double tp, double sl);
+      
+      void Sync(ulong ticket);
+      void StartUpSync();
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -42,7 +46,7 @@ OrderGraphics::~OrderGraphics()
 
 
 
-void OrderGraphics::Add(ulong ticket, double price, double tp, double sl)
+void OrderGraphics::Add(ulong ticket, double price, double gtp, double gsl)
 {
    if (chart_id < 1)
    {
@@ -51,9 +55,9 @@ void OrderGraphics::Add(ulong ticket, double price, double tp, double sl)
    }
    
    OrderGraphicsItem ord;
-   ord.Init(chart_id, ticket,price,in_list);
+   ord.Init(chart_id, ticket,price,in_list, gtp, gsl);
    
-   orders[0] = ord;
+   orders[in_list] = ord;
    in_list ++;
    
    ChartRedraw(chart_id);
@@ -68,4 +72,52 @@ void OrderGraphics::SetChartId(long chart_id_)
    }
    
    chart_id = chart_id_;
+}
+
+
+void OrderGraphics::Sync(ulong ticket)
+{
+   for (int i=0; i < in_list; i++)
+   {
+      if (orders[i].ticket == ticket)
+      {
+         orders[i].sync();
+         return;
+      }
+   }
+   
+   //if it did not exit the method
+   //adding the thing
+   
+   Add(ticket);
+}
+
+void OrderGraphics::StartUpSync()
+{
+   int total = PositionsTotal();
+   
+   for (int i=0; i < total; i++)
+   {
+      ulong ticket;
+      if ((ticket = PositionGetTicket(i)) == 0) continue;     //couldn't get position ticket
+      
+      Sync(ticket);                                           //sync this position
+   }
+}
+
+
+void OrderGraphics::Add(ulong  ticket)
+{
+   double gsl, gtp, price_open;
+      
+   
+   if (!PositionSelectByTicket(ticket) 
+      || !PositionGetDouble(POSITION_PRICE_OPEN, price_open) 
+      || !PositionGetDouble(POSITION_TP, gtp) 
+      || !PositionGetDouble(POSITION_SL, gsl))
+   {
+      return;
+   }
+   
+   OrderGraphics::Add(ticket,price_open ,gtp, gsl);
 }
