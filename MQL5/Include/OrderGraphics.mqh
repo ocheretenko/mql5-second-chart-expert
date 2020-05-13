@@ -12,7 +12,8 @@
 class OrderGraphics
 {
 private:
-
+      void Add(ulong  ticket);
+      
 public:
       int in_list;
       OrderGraphicsItem orders[255];
@@ -23,8 +24,9 @@ public:
      ~OrderGraphics();
       void OrderGraphics::SetChartId(long chart_id_);
       void Add(ulong ticket, double price, double tp, double sl);
-      void Add(ulong  ticket);
+      
       void Sync(ulong ticket);
+      void StartUpSync();
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -88,6 +90,19 @@ void OrderGraphics::Sync(ulong ticket)
    //adding the thing
    
    Add(ticket);
+}
+
+void OrderGraphics::StartUpSync()
+{
+   int total = PositionsTotal();
+   
+   for (int i=0; i < total; i++)
+   {
+      ulong ticket;
+      if ((ticket = PositionGetTicket(i)) == 0) continue;     //couldn't get position ticket
+      
+      Sync(ticket);                                           //sync this position
+   }
 }
 
 
