@@ -55,7 +55,7 @@ void OrderGraphics::Add(ulong ticket, double price, double tp, double sl)
    OrderGraphicsItem ord;
    ord.Init(chart_id, ticket,price,in_list);
    
-   orders[0] = ord;
+   orders[in_list] = ord;
    in_list ++;
    
    ChartRedraw(chart_id);
