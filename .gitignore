@@ -12,3 +12,5 @@
 !MQL5/Include/PositionGraphics.mqh
 !MQL5/Include/EXPERT.mqh
 !MQL5/Include/TSEButtons.mqh
+!MQL5/Include/TradeablePositionGraphicItem.mqh
+!MQL5/Include/AESTrader.mqh

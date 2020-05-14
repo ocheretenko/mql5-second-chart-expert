@@ -7,7 +7,8 @@
 #property link      "https://vk.com/war_k1ng"
 #property version   "1.01"
 
-#include "PositionGraphicItem.mqh"
+//#include "PositionGraphicItem.mqh"
+#include "TradeablePositionGraphicItem.mqh"
 
 class PositionGraphics
 {
@@ -16,7 +17,7 @@ private:
       
 public:
       int in_list;
-      PositionGraphicItem orders[10000];
+      TradeablePositionGraphicItem orders[10000];
       long chart_id;
       
       
@@ -24,7 +25,7 @@ public:
      ~PositionGraphics();
       void PositionGraphics::SetChartId(long chart_id_);
       void Add(ulong ticket, double price, double tp, double sl);
-      
+      void SyncChangedObject(string name, double new_position);
       void Sync(ulong ticket);
       void StartUpSync();
 };
@@ -120,4 +121,18 @@ void PositionGraphics::Add(ulong  ticket)
    }
    
    PositionGraphics::Add(ticket,price_open ,gtp, gsl);
+}
+
+
+
+void PositionGraphics::SyncChangedObject(string name, double new_position)
+{
+      for (int i=0; i < in_list; i++)
+   {
+         if (orders[i].ContainsItem(name))
+         {
+            orders[i].SyncThisItem(name, new_position);
+            return;
+         }
+   }
 }
