@@ -7,3 +7,7 @@
 !MQL5/Include
 !MQL5/Include/HistoryMaker.mqh
 !MQL5/Include/PeriodConvert.mqh
+!MQL5/Include/OrderGraphicsItem.mqh
+!MQL5/Include/OrderGraphics.mqh
+!MQL5/Include/EXPERT.mqh
+!MQL5/Include/TSEButtons.mqh

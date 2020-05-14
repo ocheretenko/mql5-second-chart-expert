@@ -1,11 +1,11 @@
 //+------------------------------------------------------------------+
 //|                                                 HistoryMaker.mqh |
-//|                              2020 (c) Kharkiv Technologies Corp. |
-//|                                              https://google.com/ |
+//|                                     2020 (c) Oleksii Ocheretenko |
+//|                                          https://vk.com/war_k1ng |
 //+------------------------------------------------------------------+
-#property copyright "2020 (c) Kharkiv Technologies Corp."
-#property link      "https://google.com/"
-#property version   "1.00"
+#property copyright "2020 (c) Oleksii Ocheretenko"
+#property link      "https://vk.com/war_k1ng"
+#property version   "1.01"
 
 #include <PeriodConvert.mqh>
 
