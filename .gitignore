@@ -1,5 +1,6 @@
 *
 !.gitignore
+!.gitattributes
 !MQL5
 !MQL5/Experts
 !MQL5/Experts/Advisors
