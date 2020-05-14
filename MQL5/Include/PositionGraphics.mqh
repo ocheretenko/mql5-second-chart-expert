@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|                                                OrderGraphics.mqh |
+//|                                             PositionGraphics.mqh |
 //|                                     2020 (c) Oleksii Ocheretenko |
 //|                                          https://vk.com/war_k1ng |
 //+------------------------------------------------------------------+
@@ -7,22 +7,22 @@
 #property link      "https://vk.com/war_k1ng"
 #property version   "1.01"
 
-#include "OrderGraphicsItem.mqh"
+#include "PositionGraphicItem.mqh"
 
-class OrderGraphics
+class PositionGraphics
 {
 private:
       void Add(ulong  ticket);
       
 public:
       int in_list;
-      OrderGraphicsItem orders[10000];
+      PositionGraphicItem orders[10000];
       long chart_id;
       
       
-      OrderGraphics();
-     ~OrderGraphics();
-      void OrderGraphics::SetChartId(long chart_id_);
+      PositionGraphics();
+     ~PositionGraphics();
+      void PositionGraphics::SetChartId(long chart_id_);
       void Add(ulong ticket, double price, double tp, double sl);
       
       void Sync(ulong ticket);
@@ -31,7 +31,7 @@ public:
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-OrderGraphics::OrderGraphics()
+PositionGraphics::PositionGraphics()
 {
    chart_id = NULL;
    in_list = 0;
@@ -39,14 +39,14 @@ OrderGraphics::OrderGraphics()
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-OrderGraphics::~OrderGraphics()
+PositionGraphics::~PositionGraphics()
 {
 }
 //+------------------------------------------------------------------+
 
 
 
-void OrderGraphics::Add(ulong ticket, double price, double gtp, double gsl)
+void PositionGraphics::Add(ulong ticket, double price, double gtp, double gsl)
 {
    if (chart_id < 1)
    {
@@ -54,7 +54,7 @@ void OrderGraphics::Add(ulong ticket, double price, double gtp, double gsl)
       ExpertRemove();
    }
    
-   OrderGraphicsItem ord;
+   PositionGraphicItem ord;
    ord.Init(chart_id, ticket,price,in_list, gtp, gsl);
    
    orders[in_list] = ord;
@@ -63,7 +63,7 @@ void OrderGraphics::Add(ulong ticket, double price, double gtp, double gsl)
    ChartRedraw(chart_id);
 }
 
-void OrderGraphics::SetChartId(long chart_id_)
+void PositionGraphics::SetChartId(long chart_id_)
 {
    if (chart_id_ < 1)
    {
@@ -75,7 +75,7 @@ void OrderGraphics::SetChartId(long chart_id_)
 }
 
 
-void OrderGraphics::Sync(ulong ticket)
+void PositionGraphics::Sync(ulong ticket)
 {
    for (int i=0; i < in_list; i++)
    {
@@ -92,7 +92,7 @@ void OrderGraphics::Sync(ulong ticket)
    Add(ticket);
 }
 
-void OrderGraphics::StartUpSync()
+void PositionGraphics::StartUpSync()
 {
    int total = PositionsTotal();
    
@@ -106,7 +106,7 @@ void OrderGraphics::StartUpSync()
 }
 
 
-void OrderGraphics::Add(ulong  ticket)
+void PositionGraphics::Add(ulong  ticket)
 {
    double gsl, gtp, price_open;
       
@@ -119,5 +119,5 @@ void OrderGraphics::Add(ulong  ticket)
       return;
    }
    
-   OrderGraphics::Add(ticket,price_open ,gtp, gsl);
+   PositionGraphics::Add(ticket,price_open ,gtp, gsl);
 }
