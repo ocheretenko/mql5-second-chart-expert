@@ -16,7 +16,7 @@ private:
       
 public:
       int in_list;
-      OrderGraphicsItem orders[255];
+      OrderGraphicsItem orders[10000];
       long chart_id;
       
       
