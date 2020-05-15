@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "2020 (c) Oleksii Ocheretenko"
 #property link      "https://vk.com/war_k1ng"
-#property version   "1.01"
+#property version   "1.02"
 
 class PeriodConvert
 {
