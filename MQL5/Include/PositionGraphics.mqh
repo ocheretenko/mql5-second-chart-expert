@@ -23,7 +23,8 @@ public:
       
       PositionGraphics();
      ~PositionGraphics();
-      void PositionGraphics::SetChartId(long chart_id_);
+      void OnItemClick(string item_name);
+      void SetChartId(long chart_id_);
       void Add(ulong ticket, double price, double tp, double sl);
       void SyncChangedObject(string item_name);
       void OnItemDelete(string item_name);
@@ -146,6 +147,19 @@ void PositionGraphics::OnItemDelete(string item_name)
       if (orders[i].ContainsItem(item_name))
       {
          orders[i].OnItemDelete(item_name);
+         return;
+      }
+   }
+}
+
+
+void PositionGraphics::OnItemClick(string item_name)
+{
+   for (int i=0; i< in_list; i++)
+   {
+      if (orders[i].ContainsItem(item_name))
+      {
+         orders[i].OnItemClick(item_name);
          return;
       }
    }
