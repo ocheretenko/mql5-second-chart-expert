@@ -6,7 +6,7 @@
 !MQL5/Experts/Advisors
 !MQL5/Experts/Advisors/TicksSecondsExpert.mq5
 !MQL5/Include
-!MQL5/Include/HistoryMaker.mqh
+#!MQL5/Include/HistoryMaker.mqh
 !MQL5/Include/PeriodConvert.mqh
 !MQL5/Include/PositionGraphicItem.mqh
 !MQL5/Include/PositionGraphics.mqh
