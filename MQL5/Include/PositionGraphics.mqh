@@ -112,15 +112,18 @@ void PositionGraphics::StartUpSync()
 void PositionGraphics::Add(ulong  ticket)
 {
    double gsl, gtp, price_open;
-      
+   string symbl;
    
    if (!PositionSelectByTicket(ticket) 
       || !PositionGetDouble(POSITION_PRICE_OPEN, price_open) 
       || !PositionGetDouble(POSITION_TP, gtp) 
-      || !PositionGetDouble(POSITION_SL, gsl))
+      || !PositionGetDouble(POSITION_SL, gsl)
+      || !PositionGetString(POSITION_SYMBOL,  symbl))
    {
       return;
    }
+   
+   if (StringFind(_Symbol, symbl) == -1) return;   //not our symbol. no reason to add this one
    
    PositionGraphics::Add(ticket,price_open ,gtp, gsl);
 }
