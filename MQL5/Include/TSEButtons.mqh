@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "2020 (c) Oleksii Ocheretenko"
 #property link      "https://vk.com/war_k1ng"
-#property version   "1.01"
+#property version   "1.03"
 
 class TSEButtons
   {
@@ -41,6 +41,7 @@ void TSEButtons::Create()
    
    TSEButtonCreate(0,"AES Open Chart",0,200,20,120,20,0,"Open Chart");
    TSEButtonCreate(0,"AES Exit",0,320,20,40,20,0,"Exit");
+   ChartRedraw(0);
 }
 
 void TSEButtons::Delete()

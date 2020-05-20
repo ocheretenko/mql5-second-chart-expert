@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "2020 (c) Oleksii Ocheretenko"
 #property link      "https://vk.com/war_k1ng"
-#property version   "1.01"
+#property version   "1.03"
 
 class PeriodConvert
 {
@@ -34,7 +34,7 @@ public:
                bool HistoryTicksToMinutes(MqlTick &ticks[], int quantity);
                bool HistorySecondsToMinutes(MqlTick &ticks[], int quantity);
                
-               void Reset(datetime start_time = D'2000.1.1 0:00');
+               void Reset(datetime start_time = D'1971.1.1 0:00');
                
                bool OnTickUpdateTicks(MqlTick &tick[]);
                bool OnTickUpdateSeconds(MqlTick &tick[]);
@@ -128,7 +128,7 @@ bool PeriodConvert::PrivateTicksToMinutes(MqlTick &ticks[], int quantity, uint o
 
 
 
-void PeriodConvert::Reset(datetime start_time = D'2000.1.1 0:00')
+void PeriodConvert::Reset(datetime start_time = D'1971.1.1 0:00')
 {
 
    rewrite_start_time = start_time;
